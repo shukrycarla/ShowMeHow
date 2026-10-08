@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Show Me How</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#fffaf0;--card:#fff;--ink:#1f2a44;--muted:#5b6785;--accent:#3b6ef5;--accent2:#ffb703;--good:#1b9e5a;--line:#e3dccb}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141a2b;--card:#1d2540;--ink:#f3f5ff;--muted:#a7b1d1;--accent:#7a9cff;--accent2:#ffc933;--good:#4cd48a;--line:#2d3760}}
+:root[data-theme="dark"]{--bg:#141a2b;--card:#1d2540;--ink:#f3f5ff;--muted:#a7b1d1;--accent:#7a9cff;--accent2:#ffc933;--good:#4cd48a;--line:#2d3760}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",Verdana,system-ui,sans-serif;font-size:19px;line-height:1.5}
+main{max-width:760px;margin:0 auto;padding:16px}
+h1{font-size:30px;margin:6px 0}h2{margin:6px 0 8px;font-size:26px;line-height:1.2}
+.sub{color:var(--muted);margin:0 0 14px}
+.card{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:18px;margin-bottom:14px}
+.subjects{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.subjects button{font-size:20px;padding:14px;border-radius:16px;border:3px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;font-family:inherit}
+.subjects button[aria-pressed=true]{border-color:var(--accent);background:var(--accent);color:#fff}
+.drop{display:block;text-align:center;border:3px dashed var(--accent);border-radius:18px;padding:22px;cursor:pointer;font-weight:700}
+.drop input{display:none}
+.thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.thumbs img{width:84px;height:84px;object-fit:cover;border-radius:12px;border:2px solid var(--line)}
+textarea{width:100%;font:inherit;border-radius:12px;border:2px solid var(--line);padding:10px;background:var(--bg);color:var(--ink);margin-top:10px}
+.go{width:100%;font:inherit;font-size:22px;font-weight:700;padding:16px;border:0;border-radius:18px;background:var(--accent2);color:#1f2a44;cursor:pointer}
+.go:disabled{opacity:.5}
+.btn{font:inherit;font-weight:700;padding:12px 16px;border-radius:14px;border:2px solid var(--accent);background:var(--card);color:var(--ink);cursor:pointer}
+.btn.p{background:var(--accent);color:#fff}.btn:disabled{opacity:.4}
+.nav{display:flex;gap:8px;justify-content:space-between;align-items:center;margin-top:10px}
+.dots{display:flex;gap:6px;justify-content:center;margin:8px 0;flex-wrap:wrap}
+.dots i{width:11px;height:11px;border-radius:50%;background:var(--line);transition:all .4s}.dots i.on{background:var(--accent);transform:scale(1.4)}
+.dots i.rdy{background:var(--muted)}
+.bar{height:12px;background:var(--line);border-radius:8px;overflow:hidden;margin-bottom:12px}
+.bar b{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .8s cubic-bezier(.22,1,.36,1)}
+.slide{overflow:hidden;min-height:300px}
+.in-f{animation:inF .7s cubic-bezier(.22,1,.36,1) both}.in-b{animation:inB .7s cubic-bezier(.22,1,.36,1) both}
+.out-f{animation:outF .3s ease-in both}.out-b{animation:outB .3s ease-in both}
+@keyframes inF{from{opacity:0;transform:translateX(70px) scale(.96)}to{opacity:1;transform:none}}
+@keyframes inB{from{opacity:0;transform:translateX(-70px) scale(.96)}to{opacity:1;transform:none}}
+@keyframes outF{to{opacity:0;transform:translateX(-70px) scale(.96)}}
+@keyframes outB{to{opacity:0;transform:translateX(70px) scale(.96)}}
+.slide.in-f>*,.slide.in-b>*{animation:rise .7s cubic-bezier(.22,1,.36,1) both}
+.slide>:nth-child(1){animation-delay:.1s}.slide>:nth-child(2){animation-delay:.2s}.slide>:nth-child(3){animation-delay:.3s}
+.slide>:nth-child(4){animation-delay:.45s}.slide>:nth-child(5){animation-delay:.6s}.slide>:nth-child(6){animation-delay:.75s}
+@keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+.tag{display:inline-block;background:var(--accent2);color:#1f2a44;border-radius:10px;padding:2px 12px;font-weight:700;font-size:15px}
+.art{width:100%;border-radius:14px;background:var(--bg);border:2px solid var(--line);margin:8px 0;display:block}
+.graph{width:100%;background:var(--bg);border:2px solid var(--line);border-radius:14px;margin:8px 0;display:block}
+.graph .ax{stroke:var(--muted);stroke-width:2}.graph .gr{stroke:var(--line);stroke-width:1}
+.graph text{fill:var(--ink);font-size:14px;font-family:inherit}
+.graph .ln{fill:none;stroke:var(--accent);stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.8s .5s ease forwards}
+.graph .l2{stroke:var(--accent2)}
+@keyframes draw{to{stroke-dashoffset:0}}
+.graph .dot{fill:var(--accent);animation:pulse 1.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+.graph .hi{fill:var(--good)}
+@keyframes pulse{50%{transform:scale(1.5)}}
+.graph .bb{fill:var(--accent);transform-box:fill-box;transform-origin:bottom;animation:grow 1s .4s cubic-bezier(.22,1,.36,1) both}
+@keyframes grow{from{transform:scaleY(0)}}
+.eq{font-size:clamp(26px,7vw,40px);font-weight:700;text-align:center;padding:18px 8px;border-radius:16px;background:var(--bg);border:3px solid var(--accent);margin:8px 0;overflow-x:auto;white-space:nowrap}
+.parts{display:grid;gap:8px;margin:8px 0}
+.part{display:flex;gap:10px;align-items:center;background:var(--bg);border-radius:12px;padding:8px 12px;border:2px solid var(--line)}
+.part b{font-size:26px;min-width:44px;text-align:center}
+.problem{background:var(--bg);border-left:6px solid var(--accent);padding:10px 14px;border-radius:12px;margin:8px 0;font-weight:700}
+.step{display:none;margin:10px 0;border:2px solid var(--line);border-radius:16px;padding:10px 14px}
+.step.show{display:block;animation:rise .6s cubic-bezier(.22,1,.36,1) both}
+.step .n{display:inline-block;background:var(--accent);color:#fff;border-radius:50%;width:30px;height:30px;text-align:center;font-weight:700;margin-right:6px}
+.step .m{font-size:clamp(22px,6vw,32px);font-weight:700;margin:6px 0;overflow-x:auto;white-space:nowrap;color:var(--accent)}
+.step .w{color:var(--muted);font-size:17px}
+.answer{background:var(--good);color:#fff;border-radius:14px;padding:12px 16px;font-weight:700;font-size:22px;display:none}
+.answer.show{display:block;animation:rise .6s both}
+.link{border-left:6px solid var(--accent2);padding-left:12px;margin:8px 0}
+.load{text-align:center;padding:50px 10px;color:var(--muted);font-weight:700}
+.load span{display:inline-block;font-size:48px;animation:wig 1.2s ease-in-out infinite}
+@keyframes wig{50%{transform:rotate(-15deg) translateY(-6px)}}
+ul.b{padding-left:22px}ul.b li{margin:6px 0}
+.err{color:#c0392b;font-weight:700}.hide{display:none}
+#status{color:var(--muted);text-align:center;margin:4px 0}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.graph .ln{stroke-dashoffset:0}}
+</style>
+</head>
+<body>
+<main>
+<h1>👋 Show Me How</h1>
+<p class="sub">Add photos of a chapter or exercises. I will build a presentation with pictures, graphs, and solved examples.</p>
+
+<section id="setup">
+ <div class="card"><b>1. Pick your class</b><div class="subjects" id="subjects" style="margin-top:10px"></div></div>
+ <div class="card"><b>2. Add photos (up to 6)</b>
+  <label class="drop" style="margin-top:10px">📷 Tap to take or choose photos<input id="file" type="file" accept="image/*" multiple></label>
+  <div class="thumbs" id="thumbs"></div>
+  <textarea id="note" rows="2" placeholder="Anything I should know? (optional)"></textarea>
+ </div>
+ <button class="go" id="go" disabled>✨ Make my presentation</button>
+ <p id="msg" class="err"></p>
+</section>
+
+<section id="guide" class="hide">
+ <div class="bar"><b id="bar"></b></div>
+ <div id="status"></div>
+ <div class="card slide" id="slide"></div>
+ <div class="dots" id="dots"></div>
+ <div class="nav">
+  <button class="btn" id="prev">⬅️</button>
+  <button class="btn" id="say">🔊</button>
+  <button class="btn" id="play">▶️ Play</button>
+  <button class="btn p" id="next">Next ➡️</button>
+ </div>
+ <p style="text-align:center"><button class="btn" id="again">📷 New chapter</button></p>
+</section>
+</main>
+
+<script>
+const SUBJECTS=[["🔢","Math"],["⚛️","Physics"],["🌱","Biology"],["🧪","Chemistry"],["📖","Other"]];
+let subject="Math",images=[],plan=null,slides=[],idx=0,sub=0,sample=null,gen=0;
+let busy=false,playing=false,timer=null;
+const $=id=>document.getElementById(id),wait=ms=>new Promise(r=>setTimeout(r,ms));
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function drawSubjects(){
+ $("subjects").innerHTML=SUBJECTS.map(([e,n])=>`<button aria-pressed="${n===subject}" data-n="${n}">${e} ${n}</button>`).join("");
+ $("subjects").querySelectorAll("button").forEach(b=>b.onclick=()=>{subject=b.dataset.n;drawSubjects()});
+}
+drawSubjects();
+function shrink(file){return new Promise((res,rej)=>{const img=new Image(),u=URL.createObjectURL(file);
+ img.onload=()=>{const s=Math.min(1,1280/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=img.width*s;c.height=img.height*s;
+  c.getContext("2d").drawImage(img,0,0,c.width,c.height);c.toBlob(b=>{URL.revokeObjectURL(u);res(b)},"image/jpeg",.8)};img.onerror=rej;img.src=u})}
+$("file").onchange=async e=>{
+ $("msg").textContent="";images=[];$("thumbs").innerHTML="";
+ for(const f of [...e.target.files].slice(0,6)){try{const b=await shrink(f);images.push(b);const im=document.createElement("img");im.src=URL.createObjectURL(b);$("thumbs").appendChild(im)}catch(_){}}
+ $("go").disabled=!images.length;
+};
+
+/* ---------- generation ---------- */
+const SCHEMA={
+intro:`{"title":"","hook":"2 short sentences: a real-life story or question that makes this topic matter","art":"SVG"}`,
+concept:`{"title":"","bullets":["max 3 short sentences"],"example":"one real-life example in 1-2 sentences","art":"SVG"}`,
+equation:`{"title":"","equation":"the formula in plain Unicode text, e.g. C = D ÷ V","parts":[{"symbol":"C","meaning":"plain-words meaning with unit","color":"#hex"}],"text":"how to read it, 1-2 short sentences","example":"tiny numeric example with its answer","art":"SVG or empty"}`,
+graph:`{"title":"","kind":"line or bar","xLabel":"with unit","yLabel":"with unit","series":[{"name":"","points":[[x,y],[x,y]]}],"highlight":{"x":0,"y":0,"label":"short"},"text":"what the graph shows, 2 short sentences"} (for bar charts points are ["label",value]; use 5-9 accurate points)`,
+worked:`{"title":"","problem":"full question with numbers","steps":[{"math":"the equation or line for this step","say":"what we do, one short sentence","why":"why we do it, simple words"}],"answer":"final answer with units","art":"SVG or empty"} (4-7 steps; math must be correct and each step must follow from the one before)`,
+reallife:`{"title":"","scenario":"a real situation with numbers","steps":[{"math":"","say":"","why":""}],"answer":"final answer with units","connection":"1 sentence tying back to the chapter formula","art":"SVG"} (4-6 steps, check the arithmetic)`,
+recap:`{"title":"","bullets":["3 key ideas"],"practice":"one practice question","hint":"one hint"}`};
+const ART=`"art" is ONE inline SVG string: viewBox="0 0 600 340", no scripts, no external images. Draw a REAL labeled diagram of the idea (objects, arrows, bars, cells, molecules, number lines, scales, a patient and a syringe, etc), with soft gradients, 3-6 short labels (font-size 18+), and gentle <animate>/<animateTransform> motion. Under 2500 characters.`;
+
+async function ask(text,opts){
+ for(let t=0;t<2;t++){
+  try{return await sample.json(t?text+"\n\nIMPORTANT: your last reply was cut off or invalid. Be MUCH shorter. Reply with only valid JSON.":text,{cache:false,...opts})}
+  catch(e){if(!["invalid_json","upstream_error","empty_completion"].includes(e.code)||t)throw e;await wait(1200)}
+ }
+}
+const WHY={image_rejected:"One of the photos was too big or not a normal picture. Try fewer photos (1 to 3).",images_unavailable:"This page cannot send photos right now. Reopen it inside Claude.",not_granted:"Please tap Allow when Claude asks, then try again.",rate_limited:"Too many requests. Wait a minute and try again.",refused:"Claude could not use that photo. Try a different page.",invalid_json:"The answer got cut off. Try again, or use fewer photos.",upstream_error:"Connection hiccup. Try again.",session_expired:"Please sign in to Claude again."};
+async function makePlan(){
+ let o={},n=images.length;try{const l=await sample.limits();if(l&&l.images){n=Math.min(n,l.images.maxCount||n)}}catch(_){}
+ o.images=images.slice(0,n);
+ return ask(`You are a kind, patient ${subject} teacher for students with special needs. The photo(s) show a chapter or exercises. Student note: ${$("note").value||"none"}.
+Plan a visual slide presentation that teaches it. Return ONLY JSON: {"title":"","summary":"under 120 words: key definitions, formulas, and any exercise questions with their exact numbers","realLife":"one concrete real-world setting that fits (e.g. medicine dose for a patient, baking, sports, money, phone data)","slides":[{"type":"","title":"","focus":"what this slide must teach"}]}.
+Keep the whole reply short. Use 8 to 10 slides in this order: intro, 1-2 concept, equation (if the topic has a formula or rule), graph (if numbers relate; otherwise another concept), worked (solve a question from the photo; if none, invent one), reallife (solve a question in the real setting with numbers), another worked or concept, recap. Types allowed: intro, concept, equation, graph, worked, reallife, recap.`,o);
+}
+async function makeSlide(i){
+ const sp=plan.slides[i];
+ try{
+  const r=await ask(`You are a kind, patient ${subject} teacher for students with special needs. Very short, simple sentences. No hard words.
+Chapter: ${plan.title}. Summary: ${plan.summary}. Real-life setting: ${plan.realLife}.
+All slides: ${plan.slides.map((s,j)=>(j+1)+"."+s.type+":"+s.title).join(" | ")}.
+Write slide ${i+1}: type "${sp.type}", title "${sp.title}", focus "${sp.focus}".
+Return ONLY JSON in this shape: ${SCHEMA[sp.type]||SCHEMA.concept}. ${ART} Double-check every number and calculation.`);
+  slides[i]={...r,type:sp.type,ready:true};
+ }catch(e){slides[i]={type:"concept",title:sp.title,bullets:["This slide could not be drawn."],ready:true,failed:true}}
+ if(i===idx&&!busy)show("f",true);else dots();
+}
+$("go").onclick=async()=>{
+ $("msg").textContent="";
+ try{sample=sample||await claude.use("sample")}catch(_){sample=null}
+ if(!sample){$("msg").textContent="Open this page inside Claude to make presentations.";return}
+ const my=++gen;$("go").disabled=true;$("go").textContent="⏳ Reading your photos...";
+ try{plan=await makePlan()}catch(e){$("msg").textContent=(WHY[e.code]||"Something went wrong. Try again.")+" ("+(e.code||"error")+")";$("go").disabled=false;$("go").textContent="✨ Make my presentation";return}
+ plan.slides=(plan.slides||[]).slice(0,11);slides=plan.slides.map(()=>({ready:false}));idx=0;sub=0;
+ $("setup").classList.add("hide");$("guide").classList.remove("hide");show("f",true);
+ $("go").disabled=false;$("go").textContent="✨ Make my presentation";
+ let next=0;const worker=async()=>{while(next<slides.length&&my===gen){const i=next++;await makeSlide(i)}};
+ await Promise.all([worker(),worker(),worker()]);
+ if(my===gen)$("status").textContent="";
+};
+
+/* ---------- drawing ---------- */
+function artImg(a){return a&&/<svg/i.test(a)?`<img class="art" alt="" src="data:image/svg+xml;charset=utf-8,${encodeURIComponent(a.replace(/<script[\s\S]*?<\/script>/gi,"").replace(/\son\w+="[^"]*"/gi,""))}">`:""}
+function graphSVG(g){
+ const W=600,H=340,L=64,R=20,T=24,B=64,S=(g.series||[]).filter(s=>s.points&&s.points.length);if(!S.length)return"";
+ const bar=g.kind==="bar",pts=S[0].points;
+ const ys=S.flatMap(s=>s.points.map(p=>+p[1])),y0=Math.min(0,...ys);let y1=Math.max(...ys);if(y1<=y0)y1=y0+1;
+ let o=`<svg class="graph" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(g.title)}">`;
+ const Y=y=>H-B-(y-y0)/(y1-y0)*(H-T-B);
+ for(let k=0;k<=5;k++){const v=y0+(y1-y0)*k/5,yy=Y(v);o+=`<line class="gr" x1="${L}" x2="${W-R}" y1="${yy}" y2="${yy}"/><text x="${L-8}" y="${yy+5}" text-anchor="end">${+v.toFixed(1)}</text>`}
+ if(bar){
+  const n=pts.length,bw=(W-L-R)/n;
+  pts.forEach((p,i)=>{const x=L+i*bw+bw*.15,h=Y(y0)-Y(+p[1]);o+=`<rect class="bb" style="animation-delay:${.4+i*.12}s" x="${x}" y="${Y(+p[1])}" width="${bw*.7}" height="${Math.max(h,1)}" rx="6"/><text x="${x+bw*.35}" y="${H-B+20}" text-anchor="middle">${esc(p[0])}</text>`});
+ }else{
+  const xs=S.flatMap(s=>s.points.map(p=>+p[0])),x0=Math.min(0,...xs);let x1=Math.max(...xs);if(x1<=x0)x1=x0+1;
+  const X=x=>L+(x-x0)/(x1-x0)*(W-L-R);
+  for(let k=0;k<=5;k++){const v=x0+(x1-x0)*k/5;o+=`<line class="gr" y1="${T}" y2="${H-B}" x1="${X(v)}" x2="${X(v)}"/><text x="${X(v)}" y="${H-B+20}" text-anchor="middle">${+v.toFixed(1)}</text>`}
+  S.forEach((s,k)=>{o+=`<path class="ln ${k?"l2":""}" pathLength="1" d="${s.points.map((p,i)=>(i?"L":"M")+X(+p[0])+" "+Y(+p[1])).join(" ")}"/>`;
+   s.points.forEach(p=>o+=`<circle cx="${X(+p[0])}" cy="${Y(+p[1])}" r="5" fill="${k?"var(--accent2)":"var(--accent)"}"/>`)});
+  const h=g.highlight;if(h&&isFinite(h.x)&&isFinite(h.y)){const hx=X(+h.x),hy=Y(+h.y);
+   o+=`<circle class="dot hi" cx="${hx}" cy="${hy}" r="9"/><text x="${Math.min(hx+12,W-110)}" y="${Math.max(hy-14,T+10)}" style="font-weight:700;font-size:16px">${esc(h.label)}</text>`}
+ }
+ o+=`<line class="ax" x1="${L}" x2="${L}" y1="${T}" y2="${H-B}"/><line class="ax" x1="${L}" x2="${W-R}" y1="${H-B}" y2="${H-B}"/>
+ <text x="${(L+W-R)/2}" y="${H-12}" text-anchor="middle" style="font-weight:700">${esc(g.xLabel)}</text>
+ <text transform="translate(16 ${(T+H-B)/2}) rotate(-90)" text-anchor="middle" style="font-weight:700">${esc(g.yLabel)}</text></svg>`;
+ return o;
+}
+function stepsHTML(s){
+ const st=s.steps||[];if(!st.length)return"";
+ return st.map((x,i)=>`<div class="step" data-i="${i}"><span class="n">${i+1}</span><b>${esc(x.say)}</b><div class="m">${esc(x.math)}</div><div class="w">💬 ${esc(x.why)}</div></div>`).join("")+
+  `<div class="answer" id="ans">✅ ${esc(s.answer)}</div>`;
+}
+function body(s){
+ const t=s.type;let h="";
+ if(!s.ready)return`<div class="load"><span>✏️</span><br>Drawing this slide...</div>`;
+ if(t==="intro")h=`<span class="tag">Let's start</span><h2>${esc(s.title)}</h2>${artImg(s.art)}<p>${esc(s.hook)}</p>`;
+ else if(t==="equation")h=`<span class="tag">The formula</span><h2>${esc(s.title)}</h2><div class="eq">${esc(s.equation)}</div><div class="parts">${(s.parts||[]).map(p=>`<div class="part"><b style="color:${/^#[0-9a-f]{3,8}$/i.test(p.color)?p.color:"var(--accent)"}">${esc(p.symbol)}</b><span>${esc(p.meaning)}</span></div>`).join("")}</div><p>${esc(s.text)}</p>${s.example?`<div class="link">🔎 ${esc(s.example)}</div>`:""}${artImg(s.art)}`;
+ else if(t==="graph")h=`<span class="tag">Graph</span><h2>${esc(s.title)}</h2>${graphSVG(s)}<p>${esc(s.text)}</p>`;
+ else if(t==="worked")h=`<span class="tag">Let's solve it</span><h2>${esc(s.title)}</h2><div class="problem">${esc(s.problem)}</div>${artImg(s.art)}${stepsHTML(s)}`;
+ else if(t==="reallife")h=`<span class="tag">Real life</span><h2>${esc(s.title)}</h2><div class="problem">${esc(s.scenario)}</div>${artImg(s.art)}${stepsHTML(s)}<div class="link" id="conn" style="display:none">🔗 ${esc(s.connection)}</div>`;
+ else if(t==="recap")h=`<span class="tag">Remember</span><h2>${esc(s.title)}</h2><ul class="b">${(s.bullets||[]).map(b=>`<li>${esc(b)}</li>`).join("")}</ul><div class="problem">✏️ Your turn: ${esc(s.practice)}</div><p style="color:var(--muted)">💡 Hint: ${esc(s.hint)}</p>`;
+ else h=`<span class="tag">Idea</span><h2>${esc(s.title)}</h2>${artImg(s.art)}<ul class="b">${(s.bullets||[]).map(b=>`<li>${esc(b)}</li>`).join("")}</ul>${s.example?`<div class="link">🌍 ${esc(s.example)}</div>`:""}`;
+ return h;
+}
+const nSteps=s=>(s&&s.ready&&s.steps?s.steps.length:0);
+function reveal(){
+ const s=slides[idx],n=nSteps(s);
+ document.querySelectorAll("#slide .step").forEach((e,i)=>{e.classList.toggle("show",i<sub)});
+ const a=$("ans");if(a)a.classList.toggle("show",sub>n);
+ const c=$("conn");if(c)c.style.display=sub>n?"block":"none";
+ const shown=document.querySelector("#slide .step.show:last-of-type");
+}
+function dots(){
+ $("dots").innerHTML=slides.map((s,i)=>`<i class="${i===idx?"on":s.ready?"rdy":""}"></i>`).join("");
+ $("bar").style.width=((idx+1)/Math.max(slides.length,1)*100)+"%";
+ const left=slides.filter(s=>!s.ready).length;$("status").textContent=left?`✏️ Still drawing ${left} more slide${left>1?"s":""}...`:"";
+ $("prev").disabled=idx===0&&sub===0;$("next").disabled=idx>=slides.length-1&&sub>nSteps(slides[idx]);
+}
+function show(dir="f",keepSub){
+ const s=slides[idx];speechSynthesis.cancel();clearTimeout(timer);
+ $("slide").className="card slide in-"+dir;$("slide").innerHTML=body(s);
+ if(!keepSub||!s.ready)sub=dir==="b"?nSteps(s)+1:0;
+ reveal();dots();
+ if(playing&&s.ready)schedule();
+}
+function narr(){
+ const s=slides[idx];if(!s||!s.ready)return"";
+ if(s.steps&&sub>0&&sub<=s.steps.length){const x=s.steps[sub-1];return`Step ${sub}. ${x.say}. ${x.why}`}
+ if(s.steps&&sub>s.steps.length)return`The answer is ${s.answer}. ${s.connection||""}`;
+ return[s.title,s.hook,s.text,(s.bullets||[]).join(". "),s.example,s.scenario,s.problem].filter(Boolean).join(". ");
+}
+function speak(){speechSynthesis.cancel();const t=narr();if(t)speechSynthesis.speak(new SpeechSynthesisUtterance(t))}
+function schedule(){clearTimeout(timer);if(!playing)return;speak();timer=setTimeout(()=>step(1),3500+narr().length*65)}
+async function go(n,dir){
+ if(busy||n<0||n>=slides.length)return;busy=true;clearTimeout(timer);
+ $("slide").className="card slide out-"+(dir||"f");await wait(300);idx=n;sub=0;show(dir||"f");busy=false;
+}
+function step(d){
+ const s=slides[idx],n=nSteps(s);
+ if(d>0){
+  if(!s.ready){return}
+  if(sub<=n&&n>0){sub++;reveal();dots();if(playing)schedule();return}
+  if(idx>=slides.length-1){setPlay(false);return}
+  go(idx+1,"f");
+ }else{
+  if(sub>0&&n>0){sub--;reveal();dots();return}
+  if(idx>0){go(idx-1,"b")}
+ }
+}
+function setPlay(v){playing=v;$("play").textContent=v?"⏸️ Pause":"▶️ Play";if(!v){clearTimeout(timer);speechSynthesis.cancel()}else schedule()}
+$("prev").onclick=()=>{setPlay(false);step(-1)};
+$("next").onclick=()=>{setPlay(false);step(1)};
+$("say").onclick=speak;
+$("play").onclick=()=>setPlay(!playing);
+$("again").onclick=()=>{gen++;setPlay(false);$("guide").classList.add("hide");$("setup").classList.remove("hide");images=[];$("thumbs").innerHTML="";$("file").value="";$("go").disabled=true};
+</script>
+</body>
+</html>
